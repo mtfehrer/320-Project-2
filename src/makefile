@@ -1,5 +1,5 @@
 CC = g++
-FLAGS = -Wall -Wextra
+FLAGS = -Wall -Wextra -g
 
 main: main.o DirectMapped.o
 	$(CC) $(FLAGS) main.o DirectMapped.o -o main
