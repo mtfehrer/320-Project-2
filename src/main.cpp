@@ -22,15 +22,12 @@ int main(int argc, char *argv[])
 
     while (infile >> instructionType >> std::hex >> addr)
     {
-        dm.processInstruction(instructionType, addr);
+        dm.processInstruction1KB(instructionType, addr);
 
         memoryAccesses++;
     }
 
-    outfile << dm.cacheHits1 << "," << memoryAccesses << ";";
-    outfile << dm.cacheHits4 << "," << memoryAccesses << ";";
-    outfile << dm.cacheHits16 << "," << memoryAccesses << ";";
-    outfile << dm.cacheHits32 << "," << memoryAccesses << ";" << endl;
+    outfile << dm.cacheHits1KB << "," << memoryAccesses << ";" << endl;
 
     return 0;
 }

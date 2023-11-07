@@ -1,12 +1,11 @@
 #pragma once
+#include <stdlib.h>
 
 class DirectMapped
 {
 public:
     DirectMapped();
-    void processInstruction(char instructionType, unsigned long long addr);
-    int cacheHits1;
-    int cacheHits4;
-    int cacheHits16;
-    int cacheHits32;
+    void processInstruction1KB(char instructionType, unsigned long long addr);
+    int *cache1KB;
+    int cacheHits1KB;
 };
