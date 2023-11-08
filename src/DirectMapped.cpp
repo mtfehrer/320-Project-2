@@ -6,7 +6,7 @@ using namespace std;
 
 DirectMapped::DirectMapped()
 {
-    cache1KB = (unsigned int *)calloc(1, 1000);
+    cache1KB = (unsigned int *)calloc(1, 1024);
     cacheHits1KB = 0;
 }
 
