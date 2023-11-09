@@ -26,19 +26,16 @@ void DirectMapped::processInstruction1KB(char instructionType, unsigned long lon
     unsigned int index = (addr >> offsetBits) & 31;
     unsigned int tag = addr >> (offsetBits + indexBits);
 
-    if (instructionType == 'S')
+    unsigned int validBit = validBit1KB[index];
+    unsigned int tagInCache = tag1KB[index];
+
+    if (validBit == 1 && tagInCache == tag)
+    {
+        cacheHits1KB++;
+    }
+    else
     {
         tag1KB[index] = tag;
         validBit1KB[index] = 1;
-    }
-    else if (instructionType == 'L')
-    {
-        unsigned int validBit = validBit1KB[index];
-        unsigned int tagInCache = tag1KB[index];
-
-        if (validBit == 1 && tagInCache == tag)
-        {
-            cacheHits1KB++;
-        }
     }
 }
