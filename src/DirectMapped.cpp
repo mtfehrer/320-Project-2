@@ -6,15 +6,15 @@ using namespace std;
 
 DirectMapped::DirectMapped()
 {
-    for (int i = 0; i < 32; i++)
+    cacheSizes = {1, 4, 16, 32};
+    for (int i = 0; i < cacheSizes.size(); i++)
     {
-        validBit1KB[i] = 0;
-        tag1KB[i] = 0;
+        cacheEntries[cacheSizes[i]].push_back(cacheEntry(0, 0));
+        cacheHits[cacheSizes[i]] = 0;
     }
-    cacheHits1KB = 0;
 }
 
-void DirectMapped::processInstruction1KB(char instructionType, unsigned long long addr)
+void DirectMapped::processInstruction(char instructionType, unsigned long long addr)
 {
     // int addressBits = 32;
     int offsetBits = 5;
