@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < (int)dm.cacheSizes.size(); i++)
     {
-        outfile << dm.cacheHits[i] << "," << memoryAccesses << ";";
+        outfile << dm.cacheHits[dm.cacheSizes[i]] << "," << memoryAccesses << ";";
         if (i == (int)dm.cacheSizes.size() - 1)
         {
             outfile << endl;
