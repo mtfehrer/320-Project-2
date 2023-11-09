@@ -6,36 +6,39 @@ using namespace std;
 
 DirectMapped::DirectMapped()
 {
+    offsetBits = 5;
     cacheSizes = {1, 4, 16, 32};
-    for (int i = 0; i < cacheSizes.size(); i++)
+
+    for (int i = 0; i < (int)cacheSizes.size(); i++)
     {
-        cacheEntries[cacheSizes[i]].push_back(cacheEntry(0, 0));
         cacheHits[cacheSizes[i]] = 0;
+
+        int entries = (cacheSizes[i] * 1024) / 32;
+        for (int j = 0; j < entries; j++)
+        {
+            cacheEntries[cacheSizes[i]].push_back(cacheEntry(0, 0));
+        }
     }
 }
 
-void DirectMapped::processInstruction(char instructionType, unsigned long long addr)
+void DirectMapped::processInstruction(int sizeInKB, unsigned long long addr)
 {
-    // int addressBits = 32;
-    int offsetBits = 5;
-    int indexBits = 5;
-    // int tagBits = addressBits - offsetBits - indexBits;
+    int entries = (sizeInKB * 1024) / 32;
+    int indexBits = log2(entries);
 
-    // unsigned int offset = addr & ((int)pow(2, offsetBits) - 1);
-    // unsigned int index = (addr >> offsetBits) & ((int)pow(2, indexBits) - 1);
-    unsigned int index = (addr >> offsetBits) & 31;
+    unsigned int index = (addr >> offsetBits) & (entries - 1);
     unsigned int tag = addr >> (offsetBits + indexBits);
 
-    unsigned int validBit = validBit1KB[index];
-    unsigned int tagInCache = tag1KB[index];
+    unsigned int validBit = cacheEntries[sizeInKB][index].validBit;
+    unsigned int tagInCache = cacheEntries[sizeInKB][index].tag;
 
     if (validBit == 1 && tagInCache == tag)
     {
-        cacheHits1KB++;
+        cacheHits[sizeInKB]++;
     }
     else
     {
-        tag1KB[index] = tag;
-        validBit1KB[index] = 1;
+        cacheEntries[sizeInKB][index].tag = tag;
+        cacheEntries[sizeInKB][index].validBit = 1;
     }
 }

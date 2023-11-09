@@ -22,12 +22,26 @@ int main(int argc, char *argv[])
 
     while (infile >> instructionType >> std::hex >> addr)
     {
-        dm.processInstruction1KB(instructionType, addr);
+        for (int i = 0; i < (int)dm.cacheSizes.size(); i++)
+        {
+            dm.processInstruction(dm.cacheSizes[i], addr);
+        }
 
         memoryAccesses++;
     }
 
-    outfile << dm.cacheHits1KB << "," << memoryAccesses << ";" << endl;
+    for (int i = 0; i < (int)dm.cacheSizes.size(); i++)
+    {
+        outfile << dm.cacheHits[i] << "," << memoryAccesses << ";";
+        if (i == (int)dm.cacheSizes.size() - 1)
+        {
+            outfile << endl;
+        }
+        else
+        {
+            outfile << " ";
+        }
+    }
 
     return 0;
 }

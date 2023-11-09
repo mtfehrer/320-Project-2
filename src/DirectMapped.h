@@ -21,4 +21,5 @@ public:
     vector<int> cacheSizes;
     map<int, vector<cacheEntry>> cacheEntries;
     map<int, int> cacheHits;
+    int offsetBits;
 };
