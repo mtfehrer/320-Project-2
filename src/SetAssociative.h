@@ -10,7 +10,8 @@ struct cacheEntry
 {
     unsigned int validBit;
     unsigned int tag;
-    cacheEntry(unsigned int v, unsigned int t) : validBit(v), tag(t){};
+    unsigned long long lastUsedTime;
+    cacheEntry(unsigned int v, unsigned int t) : validBit(v), tag(t), lastUsedTime(0){};
 };
 
 class SetAssociative
@@ -24,4 +25,5 @@ public:
     map<int, int> cacheHits;
     int offsetBits;
     int totalCacheLines;
+    unsigned long long currentTime;
 };

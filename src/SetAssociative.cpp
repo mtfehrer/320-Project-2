@@ -7,6 +7,7 @@ using namespace std;
 SetAssociative::SetAssociative()
 {
     offsetBits = 5;
+    currentTime = 0;
     totalCacheLines = (16 * 1024) / 32;
     associativitySizes = {2, 4, 8, 16};
 
@@ -27,6 +28,8 @@ SetAssociative::SetAssociative()
 
 void SetAssociative::processInstruction(int ways, unsigned long long addr)
 {
+    currentTime++;
+
     int cacheLinesInEachWay = totalCacheLines / ways;
     int indexBits = log2(cacheLinesInEachWay);
 
@@ -43,19 +46,28 @@ void SetAssociative::processInstruction(int ways, unsigned long long addr)
         if (cacheMap[ways][i][index].validBit == 1 && cacheMap[ways][i][index].tag == tag)
         {
             cacheHits[ways]++;
+            found = true;
+            break;
         }
     }
 
-    unsigned int validBit = cacheMap[ways][index].validBit;
-    unsigned int tagInCache = cacheEntries[sizeInKB][index].tag;
+    if (found == false)
+    {
+        // find lru element
+        int LRUWayIndex = -1;
+        unsigned long long smallestTime = currentTime;
+        for (int i = 0; i < ways; i++)
+        {
+            if (cacheMap[ways][i][index].lastUsedTime < smallestTime)
+            {
+                smallestTime = cacheMap[ways][i][index].lastUsedTime;
+                LRUWayIndex = i;
+            }
+        }
 
-    if (validBit == 1 && tagInCache == tag)
-    {
-        cacheHits[sizeInKB]++;
-    }
-    else
-    {
-        cacheEntries[sizeInKB][index].tag = tag;
-        cacheEntries[sizeInKB][index].validBit = 1;
+        // replace lru element
+        cacheMap[ways][LRUWayIndex][index].tag = tag;
+        cacheMap[ways][LRUWayIndex][index].validBit = 1;
+        cacheMap[ways][LRUWayIndex][index].lastUsedTime = currentTime;
     }
 }
