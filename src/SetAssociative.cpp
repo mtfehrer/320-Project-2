@@ -15,12 +15,15 @@ SetAssociative::SetAssociative()
     {
         int entriesInEachWay = totalCacheLines / associativitySizes[i];
 
-        vector<cacheEntry> v;
-        for (int j = 0; j < entriesInEachWay; j++)
+        for (int j = 0; j < associativitySizes[i]; j++)
         {
-            v.push_back(cacheEntry(0, 0));
+            vector<cacheEntrySA> v;
+            for (int k = 0; k < entriesInEachWay; k++)
+            {
+                v.push_back(cacheEntrySA(0, 0));
+            }
+            cacheMap[associativitySizes[i]].push_back(v);
         }
-        cacheMap[associativitySizes[i]].push_back(v);
 
         cacheHits[associativitySizes[i]] = 0;
     }
@@ -39,35 +42,40 @@ void SetAssociative::processInstruction(int ways, unsigned long long addr)
     vector<int> validBits;
     vector<unsigned int> tagsInCache;
 
-    // search for validBits and tags in cache
-    bool found = false;
-    for (int i = 0; i < ways; i++)
-    {
-        if (cacheMap[ways][i][index].validBit == 1 && cacheMap[ways][i][index].tag == tag)
-        {
-            cacheHits[ways]++;
-            found = true;
-            break;
-        }
-    }
+    pair<bool, int> val = searchForMatch(ways, index, tag);
+    bool found = val.first;
+    int LRUWayIndex = val.second;
 
     if (found == false)
     {
-        // find lru element
-        int LRUWayIndex = -1;
-        unsigned long long smallestTime = currentTime;
-        for (int i = 0; i < ways; i++)
-        {
-            if (cacheMap[ways][i][index].lastUsedTime < smallestTime)
-            {
-                smallestTime = cacheMap[ways][i][index].lastUsedTime;
-                LRUWayIndex = i;
-            }
-        }
-
-        // replace lru element
-        cacheMap[ways][LRUWayIndex][index].tag = tag;
-        cacheMap[ways][LRUWayIndex][index].validBit = 1;
-        cacheMap[ways][LRUWayIndex][index].lastUsedTime = currentTime;
+        replaceLRU(LRUWayIndex, ways, index, tag);
     }
+}
+
+pair<bool, int> SetAssociative::searchForMatch(int ways, unsigned int cacheIndex, unsigned int tag)
+{
+    pair<bool, int> res(false, -1);
+    unsigned long long smallestTime = currentTime;
+    for (int i = 0; i < ways; i++)
+    {
+        if (cacheMap[ways][i][cacheIndex].validBit == 1 && cacheMap[ways][i][cacheIndex].tag == tag)
+        {
+            cacheHits[ways]++;
+            res.first = true;
+        }
+        if (cacheMap[ways][i][cacheIndex].lastUsedTime < smallestTime)
+        {
+            smallestTime = cacheMap[ways][i][cacheIndex].lastUsedTime;
+            res.second = i;
+        }
+    }
+
+    return res;
+}
+
+void SetAssociative::replaceLRU(int LRUWayIndex, int ways, unsigned int cacheIndex, unsigned int tag)
+{
+    cacheMap[ways][LRUWayIndex][cacheIndex].tag = tag;
+    cacheMap[ways][LRUWayIndex][cacheIndex].validBit = 1;
+    cacheMap[ways][LRUWayIndex][cacheIndex].lastUsedTime = currentTime;
 }
