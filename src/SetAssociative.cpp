@@ -62,6 +62,8 @@ pair<bool, int> SetAssociative::searchForMatch(int ways, unsigned int cacheIndex
         {
             cacheHits[ways]++;
             res.first = true;
+            cacheMap[ways][i][cacheIndex].lastUsedTime = currentTime;
+            break;
         }
         if (cacheMap[ways][i][cacheIndex].lastUsedTime < smallestTime)
         {
