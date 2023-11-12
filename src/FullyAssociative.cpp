@@ -10,11 +10,11 @@ FullyAssociative::FullyAssociative()
     totalCacheLines = (16 * 1024) / 32;
     indexBits = log2(totalCacheLines);
     cacheHits = 0;
-    root = TreeNode();
+    root = new TreeNode();
     int totalDepth = log2(totalCacheLines);
     int queueSize;
 
-    queue<TreeNode> q;
+    queue<TreeNode *> q;
     q.push(root);
     int depth = 0;
     while (q.size() > 0)
@@ -22,17 +22,15 @@ FullyAssociative::FullyAssociative()
         queueSize = q.size();
         for (int i = 0; i < queueSize; i++)
         {
-            TreeNode node = q.front();
+            TreeNode *node = q.front();
             q.pop();
-            node.val = 1;
-            TreeNode l = TreeNode();
-            TreeNode r = TreeNode();
-            node.left = &l;
-            node.right = &r;
+            (*node).val = 1;
+            (*node).left = new TreeNode();
+            (*node).right = new TreeNode();
             if (depth < totalDepth - 1)
             {
-                q.push(l);
-                q.push(r);
+                q.push((*node).left);
+                q.push((*node).right);
             }
         }
         depth += 1;
@@ -52,7 +50,7 @@ void FullyAssociative::processInstruction(unsigned long long addr)
     unsigned int validBitInCache = cache[index].validBit;
     unsigned int tagInCache = cache[index].tag;
 
-    TreeNode currentNode;
+    TreeNode *currentNode;
 
     if (validBitInCache == 1 && tagInCache == tag)
     {
@@ -60,43 +58,43 @@ void FullyAssociative::processInstruction(unsigned long long addr)
     }
     else
     {
-        // need to use Pseudo-LRU replacement policy here
+        // Pseudo-LRU replacement policy
         currentNode = root;
-        while (currentNode.index == -1)
+        while ((*currentNode).index == -1)
         {
-            if (currentNode.val == 0)
+            if ((*currentNode).val == 0)
             {
-                currentNode = *(currentNode.right);
+                currentNode = (*currentNode).right;
             }
             else
             {
-                currentNode = *(currentNode.left);
+                currentNode = (*currentNode).left;
             }
         }
 
-        cache[currentNode.index].tag = tag;
-        cache[currentNode.index].validBit = 1;
+        cache[(*currentNode).index].tag = tag;
+        cache[(*currentNode).index].validBit = 1;
     }
 
     // update binary tree path
-    int m;
+    unsigned int m;
     int l = 0;
     int r = totalCacheLines - 1;
     currentNode = root;
 
-    while (currentNode.index == -1)
+    while ((*currentNode).index == -1)
     {
         m = (l + r) / 2;
         if (index < m)
         {
-            currentNode.val = 0;
-            currentNode = *(currentNode.left);
+            (*currentNode).val = 0;
+            currentNode = (*currentNode).left;
             r = m;
         }
         else
         {
-            currentNode.val = 1;
-            currentNode = *(currentNode.right);
+            (*currentNode).val = 1;
+            currentNode = (*currentNode).right;
             l = m;
         }
     }

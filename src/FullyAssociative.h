@@ -28,7 +28,7 @@ public:
     FullyAssociative();
     void processInstruction(unsigned long long addr);
     vector<cacheEntryFA> cache;
-    TreeNode root;
+    TreeNode *root;
     int cacheHits;
     int offsetBits;
     int indexBits;

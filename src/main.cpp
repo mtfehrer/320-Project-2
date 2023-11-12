@@ -3,6 +3,7 @@
 #include <string>
 #include "DirectMapped.h"
 #include "SetAssociative.h"
+#include "FullyAssociative.h"
 
 using namespace std;
 
@@ -21,6 +22,7 @@ int main(int argc, char *argv[])
     int memoryAccesses = 0;
     DirectMapped dm = DirectMapped();
     SetAssociative sa = SetAssociative();
+    FullyAssociative fa = FullyAssociative();
 
     while (infile >> instructionType >> std::hex >> addr)
     {
@@ -33,6 +35,8 @@ int main(int argc, char *argv[])
         {
             sa.processInstruction(sa.associativitySizes[i], addr);
         }
+
+        fa.processInstruction(addr);
 
         memoryAccesses++;
     }
@@ -62,6 +66,8 @@ int main(int argc, char *argv[])
             outfile << " ";
         }
     }
+
+    outfile << fa.cacheHits << "," << memoryAccesses << ";";
 
     return 0;
 }
