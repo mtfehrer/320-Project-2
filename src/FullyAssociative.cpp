@@ -1,42 +1,64 @@
+#include <queue>
+#include <cmath>
 #include "FullyAssociative.h"
 
 using namespace std;
 
 FullyAssociative::FullyAssociative()
 {
-    offsetBits = 5;
-    // set add nodes in binary tree
+    offsetBits = log2(32);
+    totalCacheLines = (16 * 1024) / 32;
+    indexBits = log2(totalCacheLines);
+    cacheHits = 0;
+    root = TreeNode();
+    int totalDepth = log2(totalCacheLines);
+    int queueSize;
 
-    for (int i = 0; i < (int)cacheSizes.size(); i++)
+    queue<TreeNode> q;
+    q.push(root);
+    int depth = 0;
+    while (q.size() > 0)
     {
-        cacheHits[cacheSizes[i]] = 0;
-
-        int entries = (cacheSizes[i] * 1024) / 32;
-        for (int j = 0; j < entries; j++)
+        queueSize = q.size();
+        for (int i = 0; i < queueSize; i++)
         {
-            cacheEntries[cacheSizes[i]].push_back(cacheEntry(0, 0));
+            TreeNode node = q.front();
+            q.pop();
+            node.val = 1;
+            TreeNode l = TreeNode();
+            TreeNode r = TreeNode();
+            node.left = &l;
+            node.right = &r;
+            if (depth < totalDepth - 1)
+            {
+                q.push(l);
+                q.push(r);
+            }
         }
+        depth += 1;
+    }
+
+    for (int i = 0; i < totalCacheLines; i++)
+    {
+        cache.push_back(cacheEntryFA(0, 0));
     }
 }
 
-void FullyAssociative::processInstruction(int sizeInKB, unsigned long long addr)
+void FullyAssociative::processInstruction(unsigned long long addr)
 {
-    int entries = (sizeInKB * 1024) / 32;
-    int indexBits = log2(entries);
-
-    unsigned int index = (addr >> offsetBits) & (entries - 1);
+    unsigned int index = (addr >> offsetBits) & (totalCacheLines - 1);
     unsigned int tag = addr >> (offsetBits + indexBits);
 
-    unsigned int validBit = cacheEntries[sizeInKB][index].validBit;
-    unsigned int tagInCache = cacheEntries[sizeInKB][index].tag;
+    unsigned int validBitInCache = cache[index].validBit;
+    unsigned int tagInCache = cache[index].tag;
 
-    if (validBit == 1 && tagInCache == tag)
+    if (validBitInCache == 1 && tagInCache == tag)
     {
-        cacheHits[sizeInKB]++;
+        cacheHits++;
     }
     else
     {
-        cacheEntries[sizeInKB][index].tag = tag;
-        cacheEntries[sizeInKB][index].validBit = 1;
+        cache[index].tag = tag;
+        cache[index].validBit = 1;
     }
 }
