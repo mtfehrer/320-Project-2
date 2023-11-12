@@ -52,13 +52,52 @@ void FullyAssociative::processInstruction(unsigned long long addr)
     unsigned int validBitInCache = cache[index].validBit;
     unsigned int tagInCache = cache[index].tag;
 
+    TreeNode currentNode;
+
     if (validBitInCache == 1 && tagInCache == tag)
     {
         cacheHits++;
     }
     else
     {
-        cache[index].tag = tag;
-        cache[index].validBit = 1;
+        // need to use Pseudo-LRU replacement policy here
+        currentNode = root;
+        while (currentNode.index == -1)
+        {
+            if (currentNode.val == 0)
+            {
+                currentNode = *(currentNode.right);
+            }
+            else
+            {
+                currentNode = *(currentNode.left);
+            }
+        }
+
+        cache[currentNode.index].tag = tag;
+        cache[currentNode.index].validBit = 1;
+    }
+
+    // update binary tree path
+    int m;
+    int l = 0;
+    int r = totalCacheLines - 1;
+    currentNode = root;
+
+    while (currentNode.index == -1)
+    {
+        m = (l + r) / 2;
+        if (index < m)
+        {
+            currentNode.val = 0;
+            currentNode = *(currentNode.left);
+            r = m;
+        }
+        else
+        {
+            currentNode.val = 1;
+            currentNode = *(currentNode.right);
+            l = m;
+        }
     }
 }

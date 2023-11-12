@@ -9,9 +9,10 @@ using namespace std;
 struct TreeNode
 {
     int val;
+    int index;
     TreeNode *left;
     TreeNode *right;
-    TreeNode() : val(0), left(nullptr), right(nullptr){};
+    TreeNode() : val(0), index(-1), left(nullptr), right(nullptr){};
 };
 
 struct cacheEntryFA
