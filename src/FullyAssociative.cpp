@@ -58,22 +58,7 @@ void FullyAssociative::processInstruction(unsigned long long addr)
     }
     else
     {
-        // Pseudo-LRU replacement policy
-        currentNode = root;
-        while ((*currentNode).index == -1)
-        {
-            if ((*currentNode).val == 0)
-            {
-                currentNode = (*currentNode).right;
-            }
-            else
-            {
-                currentNode = (*currentNode).left;
-            }
-        }
-
-        cache[(*currentNode).index].tag = tag;
-        cache[(*currentNode).index].validBit = 1;
+        LRUReplacement(tag);
     }
 
     // update binary tree path
@@ -98,4 +83,23 @@ void FullyAssociative::processInstruction(unsigned long long addr)
             l = m;
         }
     }
+}
+
+void FullyAssociative::LRUReplacement(unsigned int tag)
+{
+    TreeNode *currentNode = root;
+    while ((*currentNode).index == -1)
+    {
+        if ((*currentNode).val == 0)
+        {
+            currentNode = (*currentNode).right;
+        }
+        else
+        {
+            currentNode = (*currentNode).left;
+        }
+    }
+
+    cache[(*currentNode).index].tag = tag;
+    cache[(*currentNode).index].validBit = 1;
 }

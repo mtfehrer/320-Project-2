@@ -27,6 +27,7 @@ class FullyAssociative
 public:
     FullyAssociative();
     void processInstruction(unsigned long long addr);
+    void LRUReplacement(unsigned int tag);
     vector<cacheEntryFA> cache;
     TreeNode *root;
     int cacheHits;
