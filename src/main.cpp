@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 
         for (int i = 0; i < (int)sana.associativitySizes.size(); i++)
         {
-            sana.processInstruction(sana.associativitySizes[i], addr);
+            sana.processInstruction(sana.associativitySizes[i], addr, instructionType);
         }
 
         memoryAccesses++;

@@ -18,7 +18,7 @@ class SetAssociativeNoAllocation
 {
 public:
     SetAssociativeNoAllocation();
-    void processInstruction(int sizeInKB, unsigned long long addr);
+    void processInstruction(int sizeInKB, unsigned long long addr, char instructionType);
     void replaceLRU(int LRUWayIndex, int ways, unsigned int cacheIndex, unsigned int tag);
     pair<bool, int> searchForMatch(int ways, unsigned int cacheIndex, unsigned int tag);
     vector<int> associativitySizes;

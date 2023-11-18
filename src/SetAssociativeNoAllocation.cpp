@@ -29,7 +29,7 @@ SetAssociativeNoAllocation::SetAssociativeNoAllocation()
     }
 }
 
-void SetAssociativeNoAllocation::processInstruction(int ways, unsigned long long addr)
+void SetAssociativeNoAllocation::processInstruction(int ways, unsigned long long addr, char instructionType)
 {
     currentTime++;
 
@@ -46,7 +46,7 @@ void SetAssociativeNoAllocation::processInstruction(int ways, unsigned long long
     bool found = val.first;
     int LRUWayIndex = val.second;
 
-    if (found == false)
+    if (found == false && instructionType != 'S')
     {
         replaceLRU(LRUWayIndex, ways, index, tag);
     }
