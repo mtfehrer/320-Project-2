@@ -28,6 +28,7 @@ public:
     FullyAssociative();
     void processInstruction(unsigned long long addr);
     void LRUReplacement(unsigned int tag);
+    void updateTreePath(unsigned int index);
     vector<cacheEntryFA> cache;
     TreeNode *root;
     int cacheHits;

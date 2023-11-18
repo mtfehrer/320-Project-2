@@ -50,8 +50,6 @@ void FullyAssociative::processInstruction(unsigned long long addr)
     unsigned int validBitInCache = cache[index].validBit;
     unsigned int tagInCache = cache[index].tag;
 
-    TreeNode *currentNode;
-
     if (validBitInCache == 1 && tagInCache == tag)
     {
         cacheHits++;
@@ -61,13 +59,37 @@ void FullyAssociative::processInstruction(unsigned long long addr)
         LRUReplacement(tag);
     }
 
-    // update binary tree path
+    updateTreePath(index);
+}
+
+void FullyAssociative::LRUReplacement(unsigned int tag)
+{
+    TreeNode *currentNode = root;
+
+    while ((*currentNode).left != nullptr && (*currentNode).right != nullptr)
+    {
+        if ((*currentNode).val == 0)
+        {
+            currentNode = (*currentNode).right;
+        }
+        else
+        {
+            currentNode = (*currentNode).left;
+        }
+    }
+
+    cache[(*currentNode).index + (*currentNode).val].tag = tag;
+    cache[(*currentNode).index + (*currentNode).val].validBit = 1;
+}
+
+void FullyAssociative::updateTreePath(unsigned int index)
+{
     unsigned int m;
     int l = 0;
     int r = totalCacheLines - 1;
-    currentNode = root;
+    TreeNode *currentNode = root;
 
-    while ((*currentNode).index == -1)
+    while (currentNode != nullptr)
     {
         m = (l + r) / 2;
         if (index < m)
@@ -83,23 +105,4 @@ void FullyAssociative::processInstruction(unsigned long long addr)
             l = m;
         }
     }
-}
-
-void FullyAssociative::LRUReplacement(unsigned int tag)
-{
-    TreeNode *currentNode = root;
-    while ((*currentNode).index == -1)
-    {
-        if ((*currentNode).val == 0)
-        {
-            currentNode = (*currentNode).right;
-        }
-        else
-        {
-            currentNode = (*currentNode).left;
-        }
-    }
-
-    cache[(*currentNode).index].tag = tag;
-    cache[(*currentNode).index].validBit = 1;
 }
