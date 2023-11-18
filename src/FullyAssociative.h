@@ -6,15 +6,6 @@
 
 using namespace std;
 
-struct TreeNode
-{
-    int val;
-    int index;
-    TreeNode *left;
-    TreeNode *right;
-    TreeNode() : val(0), index(-1), left(nullptr), right(nullptr){};
-};
-
 struct cacheEntryFA
 {
     unsigned int validBit;
@@ -28,9 +19,11 @@ public:
     FullyAssociative();
     void processInstruction(unsigned long long addr);
     void LRUReplacement(unsigned int tag);
-    void updateTreePath(unsigned int index);
+    void updateTreePath();
+    int getLeftIndex(int curIndex);
+    int getRightIndex(int curIndex);
     vector<cacheEntryFA> cache;
-    TreeNode *root;
+    int tree[511];
     int cacheHits;
     int offsetBits;
     int indexBits;

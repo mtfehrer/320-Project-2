@@ -10,30 +10,10 @@ FullyAssociative::FullyAssociative()
     totalCacheLines = (16 * 1024) / 32;
     indexBits = log2(totalCacheLines);
     cacheHits = 0;
-    root = new TreeNode();
-    int totalDepth = log2(totalCacheLines);
-    int queueSize;
 
-    queue<TreeNode *> q;
-    q.push(root);
-    int depth = 0;
-    while (q.size() > 0)
+    for (int i = 0; i < 511; i++)
     {
-        queueSize = q.size();
-        for (int i = 0; i < queueSize; i++)
-        {
-            TreeNode *node = q.front();
-            q.pop();
-            (*node).val = 1;
-            (*node).left = new TreeNode();
-            (*node).right = new TreeNode();
-            if (depth < totalDepth - 1)
-            {
-                q.push((*node).left);
-                q.push((*node).right);
-            }
-        }
-        depth += 1;
+        tree[i] = 1;
     }
 
     for (int i = 0; i < totalCacheLines; i++)
@@ -59,50 +39,58 @@ void FullyAssociative::processInstruction(unsigned long long addr)
         LRUReplacement(tag);
     }
 
-    updateTreePath(index);
+    updateTreePath();
 }
 
 void FullyAssociative::LRUReplacement(unsigned int tag)
 {
-    TreeNode *currentNode = root;
+    int currentIndex = 0;
+    int indexToReplace = 0;
+    int height = log2(512);
+    int currentDepth = 1;
 
-    while ((*currentNode).left != nullptr && (*currentNode).right != nullptr)
+    while (currentDepth < height)
     {
-        if ((*currentNode).val == 0)
+        if (tree[currentIndex] == 0)
         {
-            currentNode = (*currentNode).right;
+            currentIndex = getRightIndex(currentIndex);
+            indexToReplace += (1 << (height - currentDepth - 1));
         }
         else
         {
-            currentNode = (*currentNode).left;
+            currentIndex = getLeftIndex(currentIndex);
         }
+
+        currentDepth++;
     }
 
-    cache[(*currentNode).index + (*currentNode).val].tag = tag;
-    cache[(*currentNode).index + (*currentNode).val].validBit = 1;
+    cache[indexToReplace + tree[currentIndex]].tag = tag;
+    cache[indexToReplace + tree[currentIndex]].validBit = 1;
 }
 
-void FullyAssociative::updateTreePath(unsigned int index)
+void FullyAssociative::updateTreePath()
 {
-    unsigned int m;
-    int l = 0;
-    int r = totalCacheLines - 1;
-    TreeNode *currentNode = root;
+    int currentIndex = 0;
+    int next;
 
-    while (currentNode != nullptr)
+    while (currentIndex != -1)
     {
-        m = (l + r) / 2;
-        if (index < m)
-        {
-            (*currentNode).val = 0;
-            currentNode = (*currentNode).left;
-            r = m;
-        }
-        else
-        {
-            (*currentNode).val = 1;
-            currentNode = (*currentNode).right;
-            l = m;
-        }
+        next = (tree[currentIndex] == 0) ? getLeftIndex(currentIndex) : getRightIndex(currentIndex);
+
+        tree[currentIndex] = (tree[currentIndex] == 0) ? 1 : 0;
+
+        currentIndex = next;
     }
+}
+
+int FullyAssociative::getLeftIndex(int curIndex)
+{
+    int index = (curIndex * 2) + 1;
+    return (index < 512) ? index : -1;
+}
+
+int FullyAssociative::getRightIndex(int curIndex)
+{
+    int index = (curIndex * 2) + 2;
+    return (index < 512) ? index : -1;
 }
