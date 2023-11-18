@@ -1,10 +1,10 @@
 CC = g++
 FLAGS = -Wall -Wextra -g -O0
 
-main: main.o DirectMapped.o SetAssociative.o FullyAssociative.o
-	$(CC) $(FLAGS) main.o DirectMapped.o SetAssociative.o FullyAssociative.o -o main
+main: main.o DirectMapped.o SetAssociative.o FullyAssociative.o SetAssociativeNoAllocation.o
+	$(CC) $(FLAGS) main.o DirectMapped.o SetAssociative.o FullyAssociative.o SetAssociativeNoAllocation.o -o main
 
-main.o: main.cpp DirectMapped.o SetAssociative.o FullyAssociative.o
+main.o: main.cpp DirectMapped.o SetAssociative.o FullyAssociative.o SetAssociativeNoAllocation.o
 	$(CC) $(FLAGS) main.cpp -c
 
 DirectMapped.o: DirectMapped.cpp DirectMapped.h
@@ -15,6 +15,9 @@ SetAssociative.o: SetAssociative.cpp SetAssociative.h
 
 FullyAssociative.o: FullyAssociative.cpp FullyAssociative.h
 	$(CC) $(FLAGS) FullyAssociative.cpp -c
+
+SetAssociativeNoAllocation.o: SetAssociativeNoAllocation.cpp SetAssociativeNoAllocation.h
+	$(CC) $(FLAGS) SetAssociativeNoAllocation.cpp -c
 
 clean:
 	rm *.o main

@@ -4,6 +4,7 @@
 #include "DirectMapped.h"
 #include "SetAssociative.h"
 #include "FullyAssociative.h"
+#include "SetAssociativeNoAllocation.h"
 
 using namespace std;
 
@@ -23,6 +24,7 @@ int main(int argc, char *argv[])
     DirectMapped dm = DirectMapped();
     SetAssociative sa = SetAssociative();
     FullyAssociative fa = FullyAssociative();
+    SetAssociativeNoAllocation sana = SetAssociativeNoAllocation();
 
     while (infile >> instructionType >> std::hex >> addr)
     {
@@ -37,6 +39,11 @@ int main(int argc, char *argv[])
         }
 
         fa.processInstruction(addr);
+
+        for (int i = 0; i < (int)sana.associativitySizes.size(); i++)
+        {
+            sana.processInstruction(sana.associativitySizes[i], addr);
+        }
 
         memoryAccesses++;
     }
@@ -67,7 +74,20 @@ int main(int argc, char *argv[])
         }
     }
 
-    outfile << fa.cacheHits << "," << memoryAccesses << ";";
+    outfile << fa.cacheHits << "," << memoryAccesses << ";" << endl;
+
+    for (int i = 0; i < (int)sana.associativitySizes.size(); i++)
+    {
+        outfile << sana.cacheHits[sana.associativitySizes[i]] << "," << memoryAccesses << ";";
+        if (i == (int)sana.associativitySizes.size() - 1)
+        {
+            outfile << endl;
+        }
+        else
+        {
+            outfile << " ";
+        }
+    }
 
     return 0;
 }
