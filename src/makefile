@@ -1,23 +1,17 @@
 CC = g++
-FLAGS = -Wall -Wextra -g
+FLAGS = -Wall -Wextra -O3
 
-main: main.o DirectMapped.o SetAssociative.o FullyAssociative.o SetAssociativeNA.o
-	$(CC) $(FLAGS) main.o DirectMapped.o SetAssociative.o FullyAssociative.o SetAssociativeNA.o -o main
+OBJS = DirectMapped.o SetAssociative.o FullyAssociative.o SetAssociativeNA.o SetAssociativeNLP.o
 
-main.o: main.cpp DirectMapped.o SetAssociative.o FullyAssociative.o SetAssociativeNA.o
+main: main.o $(OBJS)
+	$(CC) $(FLAGS) main.o $(OBJS) -o $@
+
+main.o: main.cpp $(OBJS)
 	$(CC) $(FLAGS) main.cpp -c
 
-DirectMapped.o: DirectMapped.cpp DirectMapped.h
-	$(CC) $(FLAGS) DirectMapped.cpp -c
+%.o: %.cpp %.h
+	$(CC) $(FLAGS) $< -c
 
-SetAssociative.o: SetAssociative.cpp SetAssociative.h
-	$(CC) $(FLAGS) SetAssociative.cpp -c
-
-FullyAssociative.o: FullyAssociative.cpp FullyAssociative.h
-	$(CC) $(FLAGS) FullyAssociative.cpp -c
-
-SetAssociativeNA.o: SetAssociativeNA.cpp SetAssociativeNA.h
-	$(CC) $(FLAGS) SetAssociativeNA.cpp -c
-
+.PHONY: clean
 clean:
-	rm *.o main
+	rm -f *.o main

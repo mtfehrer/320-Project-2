@@ -5,6 +5,7 @@
 #include "SetAssociative.h"
 #include "FullyAssociative.h"
 #include "SetAssociativeNA.h"
+#include "SetAssociativeNLP.h"
 
 using namespace std;
 
@@ -28,6 +29,7 @@ int main(int argc, char *argv[])
     SetAssociative sa = SetAssociative();
     FullyAssociative fa = FullyAssociative();
     SetAssociativeNA sana = SetAssociativeNA();
+    SetAssociativeNLP sanlp = SetAssociativeNLP();
 
     while (infile >> instructionType >> std::hex >> addr)
     {
@@ -40,6 +42,7 @@ int main(int argc, char *argv[])
         {
             sa.processInstruction(sa.associativitySizes[i], addr);
             sana.processInstructionNA(sana.associativitySizes[i], addr, instructionType);
+            sanlp.processInstruction(sanlp.associativitySizes[i], addr);
         }
 
         fa.processInstruction(addr);
@@ -54,6 +57,8 @@ int main(int argc, char *argv[])
     outfile << fa.cacheHits << "," << memoryAccesses << ";" << endl;
 
     printSetAssociativityData(outfile, sana, memoryAccesses);
+
+    printSetAssociativityData(outfile, sanlp, memoryAccesses);
 
     return 0;
 }
