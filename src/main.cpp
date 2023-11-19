@@ -4,9 +4,12 @@
 #include "DirectMapped.h"
 #include "SetAssociative.h"
 #include "FullyAssociative.h"
-#include "SetAssociativeNoAllocation.h"
+#include "SetAssociativeNA.h"
 
 using namespace std;
+
+void printDirectMappedData(ofstream &outfile, DirectMapped &dm, int memoryAccesses);
+void printSetAssociativityData(ofstream &outfile, SetAssociative &sa, int memoryAccesses);
 
 int main(int argc, char *argv[])
 {
@@ -24,7 +27,7 @@ int main(int argc, char *argv[])
     DirectMapped dm = DirectMapped();
     SetAssociative sa = SetAssociative();
     FullyAssociative fa = FullyAssociative();
-    SetAssociativeNoAllocation sana = SetAssociativeNoAllocation();
+    SetAssociativeNA sana = SetAssociativeNA();
 
     while (infile >> instructionType >> std::hex >> addr)
     {
@@ -36,18 +39,27 @@ int main(int argc, char *argv[])
         for (int i = 0; i < (int)sa.associativitySizes.size(); i++)
         {
             sa.processInstruction(sa.associativitySizes[i], addr);
+            sana.processInstructionNA(sana.associativitySizes[i], addr, instructionType);
         }
 
         fa.processInstruction(addr);
 
-        for (int i = 0; i < (int)sana.associativitySizes.size(); i++)
-        {
-            sana.processInstruction(sana.associativitySizes[i], addr, instructionType);
-        }
-
         memoryAccesses++;
     }
 
+    printDirectMappedData(outfile, dm, memoryAccesses);
+
+    printSetAssociativityData(outfile, sa, memoryAccesses);
+
+    outfile << fa.cacheHits << "," << memoryAccesses << ";" << endl;
+
+    printSetAssociativityData(outfile, sana, memoryAccesses);
+
+    return 0;
+}
+
+void printDirectMappedData(ofstream &outfile, DirectMapped &dm, int memoryAccesses)
+{
     for (int i = 0; i < (int)dm.cacheSizes.size(); i++)
     {
         outfile << dm.cacheHits[dm.cacheSizes[i]] << "," << memoryAccesses << ";";
@@ -60,7 +72,10 @@ int main(int argc, char *argv[])
             outfile << " ";
         }
     }
+}
 
+void printSetAssociativityData(ofstream &outfile, SetAssociative &sa, int memoryAccesses)
+{
     for (int i = 0; i < (int)sa.associativitySizes.size(); i++)
     {
         outfile << sa.cacheHits[sa.associativitySizes[i]] << "," << memoryAccesses << ";";
@@ -73,21 +88,4 @@ int main(int argc, char *argv[])
             outfile << " ";
         }
     }
-
-    outfile << fa.cacheHits << "," << memoryAccesses << ";" << endl;
-
-    for (int i = 0; i < (int)sana.associativitySizes.size(); i++)
-    {
-        outfile << sana.cacheHits[sana.associativitySizes[i]] << "," << memoryAccesses << ";";
-        if (i == (int)sana.associativitySizes.size() - 1)
-        {
-            outfile << endl;
-        }
-        else
-        {
-            outfile << " ";
-        }
-    }
-
-    return 0;
 }
