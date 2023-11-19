@@ -11,6 +11,7 @@ FullyAssociativeLRU::FullyAssociativeLRU()
     totalCacheLines = (16 * 1024) / 32;
     indexBits = log2(totalCacheLines);
     cacheHits = 0;
+    currentTime = 0;
 
     for (int i = 0; i < totalCacheLines; i++)
     {
@@ -20,7 +21,9 @@ FullyAssociativeLRU::FullyAssociativeLRU()
 
 void FullyAssociativeLRU::processInstruction(unsigned long long addr)
 {
-    unsigned int tag = addr >> (offsetBits + indexBits);
+    currentTime++;
+
+    unsigned int tag = addr >> offsetBits;
 
     if (searchForMatch(tag) == false)
     {
