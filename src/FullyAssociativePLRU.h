@@ -12,6 +12,7 @@ class FullyAssociativePLRU
 public:
     FullyAssociativePLRU();
     void processInstruction(unsigned long long addr);
+    bool searchForMatch(unsigned int tag);
     void LRUReplacement(unsigned int tag);
     void updateTreePath();
     int getLeftIndex(int curIndex);
@@ -20,6 +21,5 @@ public:
     int tree[511];
     int cacheHits;
     int offsetBits;
-    int indexBits;
     int totalCacheLines;
 };

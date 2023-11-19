@@ -1,5 +1,5 @@
-#include <queue>
 #include <cmath>
+#include <iostream>
 #include "FullyAssociativePLRU.h"
 #include "CacheEntryStructs.h"
 
@@ -9,7 +9,6 @@ FullyAssociativePLRU::FullyAssociativePLRU()
 {
     offsetBits = log2(32);
     totalCacheLines = (16 * 1024) / 32;
-    indexBits = log2(totalCacheLines);
     cacheHits = 0;
 
     for (int i = 0; i < 511; i++)
@@ -25,22 +24,30 @@ FullyAssociativePLRU::FullyAssociativePLRU()
 
 void FullyAssociativePLRU::processInstruction(unsigned long long addr)
 {
-    unsigned int index = (addr >> offsetBits) & (totalCacheLines - 1);
-    unsigned int tag = addr >> (offsetBits + indexBits);
+    unsigned int tag = addr >> offsetBits;
 
-    unsigned int validBitInCache = cache[index].validBit;
-    unsigned int tagInCache = cache[index].tag;
-
-    if (validBitInCache == 1 && tagInCache == tag)
+    if (searchForMatch(tag))
     {
-        cacheHits++;
+        updateTreePath();
     }
     else
     {
         LRUReplacement(tag);
     }
+}
 
-    updateTreePath();
+bool FullyAssociativePLRU::searchForMatch(unsigned int tag)
+{
+    for (int i = 0; i < totalCacheLines; i++)
+    {
+        if (cache[i].validBit == 1 && cache[i].tag == tag)
+        {
+            cacheHits++;
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void FullyAssociativePLRU::LRUReplacement(unsigned int tag)
@@ -87,11 +94,11 @@ void FullyAssociativePLRU::updateTreePath()
 int FullyAssociativePLRU::getLeftIndex(int curIndex)
 {
     int index = (curIndex * 2) + 1;
-    return (index < 512) ? index : -1;
+    return (index < 511) ? index : -1;
 }
 
 int FullyAssociativePLRU::getRightIndex(int curIndex)
 {
     int index = (curIndex * 2) + 2;
-    return (index < 512) ? index : -1;
+    return (index < 511) ? index : -1;
 }
