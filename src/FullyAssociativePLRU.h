@@ -7,10 +7,10 @@
 
 using namespace std;
 
-class FullyAssociative
+class FullyAssociativePLRU
 {
 public:
-    FullyAssociative();
+    FullyAssociativePLRU();
     void processInstruction(unsigned long long addr);
     void LRUReplacement(unsigned int tag);
     void updateTreePath();

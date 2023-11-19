@@ -1,11 +1,11 @@
 #include <queue>
 #include <cmath>
-#include "FullyAssociative.h"
+#include "FullyAssociativePLRU.h"
 #include "CacheEntryStructs.h"
 
 using namespace std;
 
-FullyAssociative::FullyAssociative()
+FullyAssociativePLRU::FullyAssociativePLRU()
 {
     offsetBits = log2(32);
     totalCacheLines = (16 * 1024) / 32;
@@ -23,7 +23,7 @@ FullyAssociative::FullyAssociative()
     }
 }
 
-void FullyAssociative::processInstruction(unsigned long long addr)
+void FullyAssociativePLRU::processInstruction(unsigned long long addr)
 {
     unsigned int index = (addr >> offsetBits) & (totalCacheLines - 1);
     unsigned int tag = addr >> (offsetBits + indexBits);
@@ -43,7 +43,7 @@ void FullyAssociative::processInstruction(unsigned long long addr)
     updateTreePath();
 }
 
-void FullyAssociative::LRUReplacement(unsigned int tag)
+void FullyAssociativePLRU::LRUReplacement(unsigned int tag)
 {
     int currentIndex = 0;
     int indexToReplace = 0;
@@ -69,7 +69,7 @@ void FullyAssociative::LRUReplacement(unsigned int tag)
     cache[indexToReplace + tree[currentIndex]].validBit = 1;
 }
 
-void FullyAssociative::updateTreePath()
+void FullyAssociativePLRU::updateTreePath()
 {
     int currentIndex = 0;
     int next;
@@ -84,13 +84,13 @@ void FullyAssociative::updateTreePath()
     }
 }
 
-int FullyAssociative::getLeftIndex(int curIndex)
+int FullyAssociativePLRU::getLeftIndex(int curIndex)
 {
     int index = (curIndex * 2) + 1;
     return (index < 512) ? index : -1;
 }
 
-int FullyAssociative::getRightIndex(int curIndex)
+int FullyAssociativePLRU::getRightIndex(int curIndex)
 {
     int index = (curIndex * 2) + 2;
     return (index < 512) ? index : -1;

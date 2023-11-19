@@ -12,8 +12,10 @@ class FullyAssociativeLRU
 public:
     FullyAssociativeLRU();
     void processInstruction(unsigned long long addr);
-    void LRUReplacement(unsigned int tag);
-    vector<cacheEntry> cache;
+    bool searchForMatch(unsigned int tag);
+    int findLRU();
+    void replaceLRU(unsigned int cacheIndex, unsigned int tag);
+    vector<cacheEntryLRU> cache;
     int cacheHits;
     int offsetBits;
     int indexBits;

@@ -3,7 +3,8 @@
 #include <string>
 #include "DirectMapped.h"
 #include "SetAssociative.h"
-#include "FullyAssociative.h"
+#include "FullyAssociativeLRU.h"
+#include "FullyAssociativePLRU.h"
 #include "SetAssociativeNA.h"
 #include "SetAssociativeNLP.h"
 
@@ -27,7 +28,8 @@ int main(int argc, char *argv[])
     int memoryAccesses = 0;
     DirectMapped dm = DirectMapped();
     SetAssociative sa = SetAssociative();
-    FullyAssociative fa = FullyAssociative();
+    FullyAssociativeLRU falru = FullyAssociativeLRU();
+    FullyAssociativePLRU faplru = FullyAssociativePLRU();
     SetAssociativeNA sana = SetAssociativeNA();
     SetAssociativeNLP sanlp = SetAssociativeNLP();
 
@@ -45,7 +47,8 @@ int main(int argc, char *argv[])
             sanlp.processInstruction(sanlp.associativitySizes[i], addr);
         }
 
-        fa.processInstruction(addr);
+        falru.processInstruction(addr);
+        faplru.processInstruction(addr);
 
         memoryAccesses++;
     }
@@ -54,7 +57,8 @@ int main(int argc, char *argv[])
 
     printSetAssociativityData(outfile, sa, memoryAccesses);
 
-    outfile << fa.cacheHits << "," << memoryAccesses << ";" << endl;
+    outfile << falru.cacheHits << "," << memoryAccesses << ";" << endl;
+    outfile << faplru.cacheHits << "," << memoryAccesses << ";" << endl;
 
     printSetAssociativityData(outfile, sana, memoryAccesses);
 
