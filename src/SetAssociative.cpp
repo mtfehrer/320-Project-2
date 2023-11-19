@@ -1,6 +1,7 @@
-#include "SetAssociative.h"
 #include <cmath>
 #include <iostream>
+#include "SetAssociative.h"
+#include "CacheEntryStructs.h"
 
 using namespace std;
 
@@ -17,10 +18,10 @@ SetAssociative::SetAssociative()
 
         for (int j = 0; j < associativitySizes[i]; j++)
         {
-            vector<cacheEntrySA> v;
+            vector<cacheEntryLRU> v;
             for (int k = 0; k < entriesInEachWay; k++)
             {
-                v.push_back(cacheEntrySA(0, 0));
+                v.push_back(cacheEntryLRU(0, 0));
             }
             cacheMap[associativitySizes[i]].push_back(v);
         }
@@ -38,9 +39,6 @@ void SetAssociative::processInstruction(int ways, unsigned long long addr)
 
     unsigned int index = (addr >> offsetBits) & (cacheLinesInEachWay - 1);
     unsigned int tag = addr >> (offsetBits + indexBits);
-
-    vector<int> validBits;
-    vector<unsigned int> tagsInCache;
 
     pair<bool, int> val = searchForMatch(ways, index, tag);
     bool found = val.first;

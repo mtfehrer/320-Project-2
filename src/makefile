@@ -9,7 +9,7 @@ main: main.o $(OBJS)
 main.o: main.cpp $(OBJS)
 	$(CC) $(FLAGS) main.cpp -c
 
-%.o: %.cpp %.h
+%.o: %.cpp %.h CacheEntryStructs.h
 	$(CC) $(FLAGS) $< -c
 
 .PHONY: clean

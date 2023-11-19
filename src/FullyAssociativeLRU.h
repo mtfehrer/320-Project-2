@@ -7,19 +7,16 @@
 
 using namespace std;
 
-class FullyAssociative
+class FullyAssociativeLRU
 {
 public:
-    FullyAssociative();
+    FullyAssociativeLRU();
     void processInstruction(unsigned long long addr);
     void LRUReplacement(unsigned int tag);
-    void updateTreePath();
-    int getLeftIndex(int curIndex);
-    int getRightIndex(int curIndex);
     vector<cacheEntry> cache;
-    int tree[511];
     int cacheHits;
     int offsetBits;
     int indexBits;
     int totalCacheLines;
+    unsigned long long currentTime;
 };

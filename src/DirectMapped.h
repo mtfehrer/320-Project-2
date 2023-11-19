@@ -3,15 +3,9 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "CacheEntryStructs.h"
 
 using namespace std;
-
-struct cacheEntry
-{
-    unsigned int validBit;
-    unsigned int tag;
-    cacheEntry(unsigned int v, unsigned int t) : validBit(v), tag(t){};
-};
 
 class DirectMapped
 {

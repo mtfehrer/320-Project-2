@@ -1,6 +1,7 @@
 #include <queue>
 #include <cmath>
 #include "FullyAssociative.h"
+#include "CacheEntryStructs.h"
 
 using namespace std;
 
@@ -18,7 +19,7 @@ FullyAssociative::FullyAssociative()
 
     for (int i = 0; i < totalCacheLines; i++)
     {
-        cache.push_back(cacheEntryFA(0, 0));
+        cache.push_back(cacheEntry(0, 0));
     }
 }
 
