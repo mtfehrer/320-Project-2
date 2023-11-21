@@ -16,11 +16,11 @@ FullyAssociativePLRU::FullyAssociativePLRU()
     {
         if (i < 255)
         {
-            tree.push_back(node(1, 0));
+            tree.push_back(node(0, 0));
         }
         else
         {
-            tree.push_back(node(1, currentIndex));
+            tree.push_back(node(0, currentIndex));
             currentIndex += 2;
         }
     }
@@ -35,11 +35,15 @@ void FullyAssociativePLRU::processInstruction(unsigned long long addr)
 {
     unsigned int tag = addr >> offsetBits;
 
-    if (searchForMatch(tag) == false)
+    if (searchForMatch(tag) == true)
+    {
+        updateTreePath();
+    }
+    else
     {
         LRUReplacement(tag);
+        updateTreePath();
     }
-    updateTreePath();
 }
 
 bool FullyAssociativePLRU::searchForMatch(unsigned int tag)
@@ -97,12 +101,18 @@ void FullyAssociativePLRU::updateTreePath()
 
 int FullyAssociativePLRU::getLeftIndex(int curIndex)
 {
-    int index = (curIndex * 2) + 1;
-    return (index < 511) ? index : -1;
+    if (curIndex >= 255 && curIndex <= 510)
+    {
+        return -1;
+    }
+    return (curIndex * 2) + 1;
 }
 
 int FullyAssociativePLRU::getRightIndex(int curIndex)
 {
-    int index = (curIndex * 2) + 2;
-    return (index < 511) ? index : -1;
+    if (curIndex >= 255 && curIndex <= 510)
+    {
+        return -1;
+    }
+    return (curIndex * 2) + 2;
 }
