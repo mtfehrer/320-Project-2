@@ -1,7 +1,7 @@
 CC = g++
-FLAGS = -Wall -Wextra -g -O0#-O3
+FLAGS = -Wall -Wextra -O3
 
-OBJS = DirectMapped.o SetAssociative.o FullyAssociativeLRU.o FullyAssociativePLRU.o SetAssociativeNA.o SetAssociativeNLP.o
+OBJS = DirectMapped.o SetAssociative.o FullyAssociativeLRU.o FullyAssociativePLRU.o SetAssociativeNA.o SetAssociativeNLP.o SetAssociativePOAM.o
 
 main: main.o $(OBJS)
 	$(CC) $(FLAGS) main.o $(OBJS) -o $@

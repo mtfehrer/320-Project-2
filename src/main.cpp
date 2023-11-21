@@ -7,6 +7,7 @@
 #include "FullyAssociativePLRU.h"
 #include "SetAssociativeNA.h"
 #include "SetAssociativeNLP.h"
+#include "SetAssociativePOAM.h"
 
 using namespace std;
 
@@ -32,6 +33,7 @@ int main(int argc, char *argv[])
     FullyAssociativePLRU faplru = FullyAssociativePLRU();
     SetAssociativeNA sana = SetAssociativeNA();
     SetAssociativeNLP sanlp = SetAssociativeNLP();
+    SetAssociativePOAM sapoam = SetAssociativePOAM();
 
     while (infile >> instructionType >> std::hex >> addr)
     {
@@ -45,6 +47,7 @@ int main(int argc, char *argv[])
             sa.processInstruction(sa.associativitySizes[i], addr);
             sana.processInstructionNA(sana.associativitySizes[i], addr, instructionType);
             sanlp.processInstructionNLP(sanlp.associativitySizes[i], addr);
+            sapoam.processInstructionPOAM(sapoam.associativitySizes[i], addr);
         }
 
         falru.processInstruction(addr);
@@ -61,8 +64,8 @@ int main(int argc, char *argv[])
     outfile << faplru.cacheHits << "," << memoryAccesses << ";" << endl;
 
     printSetAssociativityData(outfile, sana, memoryAccesses);
-
     printSetAssociativityData(outfile, sanlp, memoryAccesses);
+    printSetAssociativityData(outfile, sapoam, memoryAccesses);
 
     return 0;
 }
