@@ -7,6 +7,13 @@
 
 using namespace std;
 
+struct node
+{
+    int val;
+    int index;
+    node(int v, int i) : val(v), index(i){};
+};
+
 class FullyAssociativePLRU
 {
 public:
@@ -18,7 +25,7 @@ public:
     int getLeftIndex(int curIndex);
     int getRightIndex(int curIndex);
     vector<cacheEntry> cache;
-    int tree[511];
+    vector<node> tree;
     int cacheHits;
     int offsetBits;
     int totalCacheLines;

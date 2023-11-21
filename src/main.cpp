@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
         {
             sa.processInstruction(sa.associativitySizes[i], addr);
             sana.processInstructionNA(sana.associativitySizes[i], addr, instructionType);
-            sanlp.processInstruction(sanlp.associativitySizes[i], addr);
+            sanlp.processInstructionNLP(sanlp.associativitySizes[i], addr);
         }
 
         falru.processInstruction(addr);

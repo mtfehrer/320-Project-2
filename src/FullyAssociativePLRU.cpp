@@ -11,9 +11,18 @@ FullyAssociativePLRU::FullyAssociativePLRU()
     totalCacheLines = (16 * 1024) / 32;
     cacheHits = 0;
 
+    int currentIndex = 0;
     for (int i = 0; i < 511; i++)
     {
-        tree[i] = 1;
+        if (i < 255)
+        {
+            tree.push_back(node(1, 0));
+        }
+        else
+        {
+            tree.push_back(node(1, currentIndex));
+            currentIndex += 2;
+        }
     }
 
     for (int i = 0; i < totalCacheLines; i++)
@@ -26,14 +35,11 @@ void FullyAssociativePLRU::processInstruction(unsigned long long addr)
 {
     unsigned int tag = addr >> offsetBits;
 
-    if (searchForMatch(tag))
-    {
-        updateTreePath();
-    }
-    else
+    if (searchForMatch(tag) == false)
     {
         LRUReplacement(tag);
     }
+    updateTreePath();
 }
 
 bool FullyAssociativePLRU::searchForMatch(unsigned int tag)
@@ -53,16 +59,14 @@ bool FullyAssociativePLRU::searchForMatch(unsigned int tag)
 void FullyAssociativePLRU::LRUReplacement(unsigned int tag)
 {
     int currentIndex = 0;
-    int indexToReplace = 0;
     int height = log2(512);
     int currentDepth = 1;
 
     while (currentDepth < height)
     {
-        if (tree[currentIndex] == 0)
+        if (tree[currentIndex].val == 0)
         {
             currentIndex = getRightIndex(currentIndex);
-            indexToReplace += (1 << (height - currentDepth - 1));
         }
         else
         {
@@ -72,8 +76,8 @@ void FullyAssociativePLRU::LRUReplacement(unsigned int tag)
         currentDepth++;
     }
 
-    cache[indexToReplace + tree[currentIndex]].tag = tag;
-    cache[indexToReplace + tree[currentIndex]].validBit = 1;
+    cache[tree[currentIndex].index + tree[currentIndex].val].tag = tag;
+    cache[tree[currentIndex].index + tree[currentIndex].val].validBit = 1;
 }
 
 void FullyAssociativePLRU::updateTreePath()
@@ -83,9 +87,9 @@ void FullyAssociativePLRU::updateTreePath()
 
     while (currentIndex != -1)
     {
-        next = (tree[currentIndex] == 0) ? getLeftIndex(currentIndex) : getRightIndex(currentIndex);
+        next = (tree[currentIndex].val == 0) ? getLeftIndex(currentIndex) : getRightIndex(currentIndex);
 
-        tree[currentIndex] = (tree[currentIndex] == 0) ? 1 : 0;
+        tree[currentIndex].val = (tree[currentIndex].val == 0) ? 1 : 0;
 
         currentIndex = next;
     }
